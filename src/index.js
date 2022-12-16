@@ -42,8 +42,6 @@ const handleFormSubmit = e => {
         );
       } else {
         renderImages(hits);
-
-        // form.reset();
       }
     })
     .catch(error => {
@@ -54,14 +52,16 @@ form.addEventListener('submit', handleFormSubmit);
 
 const loadMoreHandle = () => {
   pixabayFetch(searchTerm, (page += 1)).then(({ hits }) => {
-    renderImages(hits);
+    if (!hits.length) {
+      Notify.info("We're sorry, but you've reached the end of search results.");
+    } else {
+      renderImages(hits);
+    }
   });
 };
 loadMoreBut.addEventListener('click', loadMoreHandle);
 
-input.addEventListener('focus', e => {
-  console.log(`сработал фокус на ${e.currentTarget}`);
-
+input.addEventListener('focus', () => {
   if (gallery.innerHTML !== '') {
     form.reset();
     page = 1;
