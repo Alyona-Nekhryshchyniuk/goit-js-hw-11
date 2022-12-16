@@ -13,6 +13,12 @@ const API_KEY = '32103047-74f71fbf2b590f3c03f09df5a';
 let searchTerm;
 let page = 1;
 
+const renderImages = images => {
+  for (const img of images) {
+    gallery.insertAdjacentHTML('beforeend', imagesTemplate(img));
+  }
+};
+
 const pixabayFetch = (item, page = 1) => {
   return fetch(
     `${BASE_URL}${API_KEY}&q=${item}&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=40`
@@ -28,12 +34,6 @@ const handleFormSubmit = e => {
 
   searchTerm = input.value.trim();
 
-  const render = images => {
-    for (const img of images) {
-      gallery.insertAdjacentHTML('beforeend', imagesTemplate(img));
-    }
-  };
-
   pixabayFetch(searchTerm)
     .then(({ hits }) => {
       if (!hits.length) {
@@ -41,7 +41,7 @@ const handleFormSubmit = e => {
           'Sorry, there are no images matching your search query. Please try again.'
         );
       } else {
-        render(hits);
+        renderImages(hits);
 
         // form.reset();
       }
@@ -53,7 +53,9 @@ const handleFormSubmit = e => {
 form.addEventListener('submit', handleFormSubmit);
 
 const loadMoreHandle = () => {
-  pixabayFetch(searchTerm, (page += 1)).then(render(hits));
+  pixabayFetch(searchTerm, (page += 1)).then(({ hits }) => {
+    renderImages(hits);
+  });
 };
 loadMoreBut.addEventListener('click', loadMoreHandle);
 
@@ -61,9 +63,9 @@ input.addEventListener('focus', e => {
   console.log(`сработал фокус на ${e.currentTarget}`);
 
   if (gallery.innerHTML !== '') {
-    console.log('то что в ифе выполнится');
     form.reset();
     page = 1;
     loadMoreBut.classList.remove('visible');
+    gallery.innerHTML = '';
   }
 });
