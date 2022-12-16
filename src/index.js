@@ -6,15 +6,17 @@ import 'notiflix/dist/notiflix-3.2.5.min.css';
 const gallery = document.querySelector('.gallery');
 const form = document.querySelector('form');
 const input = form.searchQuery;
+const loadMoreBut = document.querySelector('.load-more');
 
 const BASE_URL = 'https://pixabay.com/api/?key=';
 const API_KEY = '32103047-74f71fbf2b590f3c03f09df5a';
+let searchTerm;
+let page = 1;
 
-const fetch = item => {
+const pixabayFetch = (item, page = 1) => {
   return fetch(
-    `${BASE_URL}${API_KEY}&q=${item}&image_type=photo&orientation=horizontal&safesearch=true&per_page=20`
+    `${BASE_URL}${API_KEY}&q=${item}&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=40`
   ).then(resp => {
-    console.log(resp);
     return resp.json();
   });
 };
@@ -22,22 +24,46 @@ const fetch = item => {
 const handleFormSubmit = e => {
   e.preventDefault();
   gallery.innerHTML = '';
+  loadMoreBut.classList.add('visible');
 
-  let searchTerm = input.value.trim();
+  searchTerm = input.value.trim();
 
-  fetch(searchTerm)
+  const render = images => {
+    for (const img of images) {
+      gallery.insertAdjacentHTML('beforeend', imagesTemplate(img));
+    }
+  };
+
+  pixabayFetch(searchTerm)
     .then(({ hits }) => {
-      console.log(hits);
-      // if (hits.length === 0) {
-      //   Notify.failure('fail');
-      // } else {
-      //   for (const imgObj of hits) {
-      //     gallery.insertAdjacentHTML('beforeend', imagesTemplate(imgObj));
-      //   }
-      // }
+      if (!hits.length) {
+        Notify.failure(
+          'Sorry, there are no images matching your search query. Please try again.'
+        );
+      } else {
+        render(hits);
+
+        // form.reset();
+      }
     })
     .catch(error => {
       console.log(error.message);
     });
 };
 form.addEventListener('submit', handleFormSubmit);
+
+const loadMoreHandle = () => {
+  pixabayFetch(searchTerm, (page += 1)).then(render(hits));
+};
+loadMoreBut.addEventListener('click', loadMoreHandle);
+
+input.addEventListener('focus', e => {
+  console.log(`сработал фокус на ${e.currentTarget}`);
+
+  if (gallery.innerHTML !== '') {
+    console.log('то что в ифе выполнится');
+    form.reset();
+    page = 1;
+    loadMoreBut.classList.remove('visible');
+  }
+});

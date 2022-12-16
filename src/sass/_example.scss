@@ -9,10 +9,23 @@ input {
 button {
   cursor: pointer;
   font-size: 20px;
-  background-color: rgb(143, 248, 143);
   border-radius: 5px;
   padding: 2px 15px;
 }
+
+button[type='submit'] {
+  background-color: rgb(143, 248, 143);
+}
+
+.load-more {
+  visibility: hidden;
+}
+
+.load-more.visible {
+  visibility: visible;
+  background-color: yellow;
+}
+
 .gallery {
   margin: 20px;
   display: flex;
