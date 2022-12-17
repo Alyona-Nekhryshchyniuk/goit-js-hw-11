@@ -13,6 +13,7 @@ const BASE_URL = 'https://pixabay.com/api/?key=';
 const API_KEY = '32103047-74f71fbf2b590f3c03f09df5a';
 let searchTerm;
 let page = 1;
+let allAvailableImgs;
 
 const renderImages = images => {
   for (const img of images) {
@@ -43,6 +44,7 @@ const handleFormSubmit = e => {
       } else {
         Notify.info(`Hooray! We found ${totalHits} images.`);
         renderImages(hits);
+        allAvailableImgs = totalHits;
       }
     })
     .catch(error => {
@@ -75,21 +77,17 @@ input.addEventListener('focus', () => {
 });
 
 const EndPageCheck = () => {
-  if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-    console.log('gggg');
+  let pageEnd =
+    window.innerHeight + window.scrollY >= document.body.offsetHeight;
+  let alreadyRendered = page * 40;
+
+  if (pageEnd && allAvailableImgs > alreadyRendered) {
+    console.log(`alreadyRendered ${alreadyRendered}`);
+    console.log('yellow but must appear');
     loadMoreBut.classList.add('visible');
+  } else if (pageEnd) {
+    Notify.info("We're sorry, but you've reached the end of search results.");
   }
 };
 
 window.addEventListener('scroll', throttle(EndPageCheck, 1000));
-
-// element.addEventListener('scroll', function(event)
-// {
-//     var element = event.target;
-//     if (element.scrollHeight - element.scrollTop === element.clientHeight)
-//     {
-//         console.log('scrolled');
-//     }
-// });
-
-// element.scrollHeight - element.scrollTop === element.clientHeight
