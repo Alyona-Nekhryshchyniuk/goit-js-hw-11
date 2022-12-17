@@ -2,6 +2,7 @@ import imagesTemplate from './images.hbs';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 // import { Loading } from 'notiflix/build/notiflix-loading-aio';
 import 'notiflix/dist/notiflix-3.2.5.min.css';
+import throttle from 'lodash.throttle';
 
 const gallery = document.querySelector('.gallery');
 const form = document.querySelector('form');
@@ -30,17 +31,17 @@ const pixabayFetch = (item, page = 1) => {
 const handleFormSubmit = e => {
   e.preventDefault();
   gallery.innerHTML = '';
-  loadMoreBut.classList.add('visible');
 
   searchTerm = input.value.trim();
 
   pixabayFetch(searchTerm)
-    .then(({ hits }) => {
+    .then(({ hits, totalHits }) => {
       if (!hits.length) {
         Notify.failure(
           'Sorry, there are no images matching your search query. Please try again.'
         );
       } else {
+        Notify.info(`Hooray! We found ${totalHits} images.`);
         renderImages(hits);
       }
     })
@@ -51,9 +52,12 @@ const handleFormSubmit = e => {
 form.addEventListener('submit', handleFormSubmit);
 
 const loadMoreHandle = () => {
+  loadMoreBut.classList.remove('visible');
   pixabayFetch(searchTerm, (page += 1)).then(({ hits }) => {
     if (!hits.length) {
-      Notify.info("We're sorry, but you've reached the end of search results.");
+      Notify.warning(
+        "We're sorry, but you've reached the end of search results."
+      );
     } else {
       renderImages(hits);
     }
@@ -69,3 +73,23 @@ input.addEventListener('focus', () => {
     gallery.innerHTML = '';
   }
 });
+
+const EndPageCheck = () => {
+  if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+    console.log('gggg');
+    loadMoreBut.classList.add('visible');
+  }
+};
+
+window.addEventListener('scroll', throttle(EndPageCheck, 1000));
+
+// element.addEventListener('scroll', function(event)
+// {
+//     var element = event.target;
+//     if (element.scrollHeight - element.scrollTop === element.clientHeight)
+//     {
+//         console.log('scrolled');
+//     }
+// });
+
+// element.scrollHeight - element.scrollTop === element.clientHeight
