@@ -3,6 +3,8 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 // import { Loading } from 'notiflix/build/notiflix-loading-aio';
 import 'notiflix/dist/notiflix-3.2.5.min.css';
 import throttle from 'lodash.throttle';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const gallery = document.querySelector('.gallery');
 const form = document.querySelector('form');
@@ -19,6 +21,15 @@ const renderImages = images => {
   for (const img of images) {
     gallery.insertAdjacentHTML('beforeend', imagesTemplate(img));
   }
+
+  new SimpleLightbox('.link', {
+    captionDelay: '250',
+    captionsData: 'alt',
+  });
+  // let linkedCard = new SimpleLightbox('.gallery a');
+  // linkedCard.on('show.simplelightbox', function () {
+  //   console.log('show lightbox');
+  // });
 };
 
 const pixabayFetch = (item, page = 1) => {
