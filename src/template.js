@@ -1,9 +1,10 @@
-export const template = obj => {
-  const { largeImageURL, webformatURL, likes, views, comments, downloads } =
-    obj;
+export const template = (
+  { largeImageURL, webformatURL, likes, views, comments, downloads },
+  searchTerm
+) => {
   return `<a href='${largeImageURL}' class='link'>
   <div class='photo-card'>
-    <img src='${webformatURL}' alt='' loading='lazy' />
+    <img src='${webformatURL}' alt='picture of ${searchTerm}' loading='lazy' />
     <div class='info'>
       <p class='info-item'>
         <b>Likes ${likes}</b>

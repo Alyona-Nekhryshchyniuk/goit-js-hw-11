@@ -1,6 +1,11 @@
-import { template } from './template.js';
+// ESM
+import { template } from './template';
+import { apiFetch } from './apiFetch';
+import { bodyScrollBan } from './bodyScrollBan';
+import { endPageHandle } from './endPageHandle';
+
+// Libraries
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
-// import { Loading } from 'notiflix/build/notiflix-loading-aio';
 import 'notiflix/dist/notiflix-3.2.5.min.css';
 import throttle from 'lodash.throttle';
 import SimpleLightbox from 'simplelightbox';
@@ -8,36 +13,24 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const gallery = document.querySelector('.gallery');
 const form = document.querySelector('form');
-
 const input = form.searchQuery;
 const loadMoreBut = document.querySelector('.load-more');
 
-const BASE_URL = 'https://pixabay.com/api/?key=';
-const API_KEY = '32103047-74f71fbf2b590f3c03f09df5a';
+const lightbox = new SimpleLightbox('.link', {
+  scrollZoom: false,
+  overlayOpacity: 0.9,
+});
+
 let searchTerm;
 let page = 1;
-let allAvailableImgs;
+let notRenederedImgsYet;
 
 const renderImages = images => {
-  let img = images
-    .map(img => {
-      return template(img);
-    })
-    .join();
+  let r = images.map(img => template(img, searchTerm)).join('');
 
-  gallery.insertAdjacentHTML('beforeend', img);
-
-  new SimpleLightbox('.link', {
-    captionDelay: '250',
-  });
-};
-
-const pixabayFetch = (item, page = 1) => {
-  return fetch(
-    `${BASE_URL}${API_KEY}&q=${item}&image_type=photo&orientation=horizontal&safesearch=true&page=${page}&per_page=40`
-  ).then(resp => {
-    return resp.json();
-  });
+  gallery.insertAdjacentHTML('beforeend', r);
+  lightbox.refresh();
+  bodyScrollBan(lightbox);
 };
 
 const handleFormSubmit = e => {
@@ -46,7 +39,7 @@ const handleFormSubmit = e => {
 
   searchTerm = input.value.trim();
 
-  pixabayFetch(searchTerm)
+  apiFetch(searchTerm)
     .then(({ hits, totalHits }) => {
       if (!hits.length) {
         Notify.failure(
@@ -55,7 +48,7 @@ const handleFormSubmit = e => {
       } else {
         Notify.info(`Hooray! We found ${totalHits} images.`);
         renderImages(hits);
-        allAvailableImgs = totalHits;
+        notRenederedImgsYet = totalHits;
       }
     })
     .catch(error => {
@@ -66,7 +59,7 @@ form.addEventListener('submit', handleFormSubmit);
 
 const loadMoreHandle = () => {
   loadMoreBut.classList.remove('visible');
-  pixabayFetch(searchTerm, (page += 1)).then(({ hits }) => {
+  apiFetch(searchTerm, (page += 1)).then(({ hits }) => {
     if (!hits.length) {
       Notify.warning(
         "We're sorry, but you've reached the end of search results."
@@ -76,6 +69,7 @@ const loadMoreHandle = () => {
     }
   });
 };
+
 loadMoreBut.addEventListener('click', loadMoreHandle);
 
 input.addEventListener('focus', () => {
@@ -87,18 +81,11 @@ input.addEventListener('focus', () => {
   }
 });
 
-const EndPageCheck = () => {
-  let pageEnd =
-    window.innerHeight + window.scrollY >= document.body.offsetHeight;
-  let alreadyRendered = page * 40;
-
-  if (pageEnd && allAvailableImgs > alreadyRendered) {
-    console.log(`alreadyRendered ${alreadyRendered}`);
-    console.log('yellow but must appear');
-    loadMoreBut.classList.add('visible');
-  } else if (pageEnd) {
-    Notify.info("We're sorry, but you've reached the end of search results.");
-  }
-};
-
-window.addEventListener('scroll', throttle(EndPageCheck, 1000));
+window.addEventListener(
+  'scroll',
+  throttle(
+    endPageHandle,
+    1000,
+    (options = { notRenederedImgsYet, loadMoreBut, page })
+  )
+);
