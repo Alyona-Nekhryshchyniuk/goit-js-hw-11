@@ -1,10 +1,10 @@
-import imagesTemplate from './images.hbs';
+import { template } from './template.js';
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 // import { Loading } from 'notiflix/build/notiflix-loading-aio';
 import 'notiflix/dist/notiflix-3.2.5.min.css';
 import throttle from 'lodash.throttle';
-// import SimpleLightbox from 'simplelightbox';
-// import 'simplelightbox/dist/simple-lightbox.min.css';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const gallery = document.querySelector('.gallery');
 const form = document.querySelector('form');
@@ -21,15 +21,15 @@ let allAvailableImgs;
 const renderImages = images => {
   let img = images
     .map(img => {
-      return imagesTemplate(img);
+      return template(img);
     })
     .join();
 
   gallery.insertAdjacentHTML('beforeend', img);
 
-  // new SimpleLightbox('.link', {
-  //   captionDelay: '250',
-  // });
+  new SimpleLightbox('.link', {
+    captionDelay: '250',
+  });
 };
 
 const pixabayFetch = (item, page = 1) => {
