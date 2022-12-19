@@ -1,19 +1,21 @@
 export const template = obj => {
-  return `<a href='${obj.largeImageURL}' class='link'>
+  const { largeImageURL, webformatURL, likes, views, comments, downloads } =
+    obj;
+  return `<a href='${largeImageURL}' class='link'>
   <div class='photo-card'>
-    <img src='${obj.webformatURL}' alt='' loading='lazy' />
+    <img src='${webformatURL}' alt='' loading='lazy' />
     <div class='info'>
       <p class='info-item'>
-        <b>Likes ${obj.likes}</b>
+        <b>Likes ${likes}</b>
       </p>
       <p class='info-item'>
-        <b>Views ${obj.views}</b>
+        <b>Views ${views}</b>
       </p>
       <p class='info-item'>
-        <b>Comments ${obj.comments}</b>
+        <b>Comments ${comments}</b>
       </p>
       <p class='info-item'>
-        <b>Downloads ${obj.downloads}</b>
+        <b>Downloads ${downloads}</b>
       </p>
     </div>
   </div>

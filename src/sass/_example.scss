@@ -65,7 +65,11 @@ button[type='submit'] {
 }
 
 a {
+  display: block;
   text-decoration: none;
+  max-width: 24%;
+  min-width: 225px;
+  max-height: 270px;
 }
 
 img {
@@ -80,9 +84,9 @@ img {
   padding: 10px 0px;
 }
 .photo-card {
-  max-width: 24%;
-  min-width: 225px;
-  max-height: 270px;
+  // max-width: 24%;
+  // min-width: 225px;
+  // max-height: 270px;
   box-shadow: 0px 4px 5px grey;
 }
 
