@@ -8,6 +8,7 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 
 const gallery = document.querySelector('.gallery');
 const form = document.querySelector('form');
+
 const input = form.searchQuery;
 const loadMoreBut = document.querySelector('.load-more');
 
@@ -18,14 +19,27 @@ let page = 1;
 let allAvailableImgs;
 
 const renderImages = images => {
-  for (const img of images) {
-    gallery.insertAdjacentHTML('beforeend', imagesTemplate(img));
-  }
+  let img = images
+    .map(img => {
+      return imagesTemplate(img);
+    })
+    .join();
+
+  gallery.insertAdjacentHTML('beforeend', img);
 
   new SimpleLightbox('.link', {
     captionDelay: '250',
-    captionsData: 'alt',
   });
+
+  // for (const img of images) {
+  //   gallery.insertAdjacentHTML('beforeend', imagesTemplate(img));
+  // }
+
+  // var h = new SimpleLightbox('.gallery a', {
+  //   captionDelay: '250',
+  //   captionsData: 'alt',
+  // });
+
   // let linkedCard = new SimpleLightbox('.gallery a');
   // linkedCard.on('show.simplelightbox', function () {
   //   console.log('show lightbox');
