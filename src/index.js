@@ -24,7 +24,6 @@ const lightbox = new SimpleLightbox('.link', {
   scrollZoom: false,
   overlayOpacity: 0.9,
 });
-
 const renderImages = images => {
   alreadyRendered += images.length;
   let templateForAll = images.map(img => template(img, searchTerm)).join('');
@@ -36,6 +35,7 @@ const renderImages = images => {
 
 const handleFormSubmit = e => {
   e.preventDefault();
+
   gallery.innerHTML = '';
 
   searchTerm = input.value.trim();
@@ -90,7 +90,8 @@ const endPageHandle = () => {
     loadMoreBut.classList.add('visible');
     console.log('added visible');
   } else if (pageEnd) {
-    Notify.info("We're sorry, but you've reached the end of search results.");
+    Notify.info("We're sorry.");
+    // Notify.info("We're sorry, but you've reached the end of search results.");
   }
 };
 
