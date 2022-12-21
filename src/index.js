@@ -19,6 +19,7 @@ let searchTerm;
 let page = 1;
 let totalBalance;
 let alreadyRendered = 0;
+let call = true;
 
 const lightbox = new SimpleLightbox('.link', {
   scrollZoom: false,
@@ -60,7 +61,6 @@ form.addEventListener('submit', handleFormSubmit);
 
 const loadMoreHandle = () => {
   loadMoreBut.classList.remove('visible');
-  console.log('removed visible');
   apiFetch(searchTerm, (page += 1)).then(({ hits }) => {
     if (!hits.length) {
       Notify.info("We're sorry, but you've reached the end of search results.");
@@ -78,19 +78,23 @@ input.addEventListener('focus', () => {
     form.reset();
     page = 1;
     loadMoreBut.classList.remove('visible');
-    console.log('removed visible');
     gallery.innerHTML = '';
+    call = true;
   }
 });
+
+function notifyInfo() {
+  Notify.info("We're sorry, but you've reached the end of search results.");
+}
 
 const endPageHandle = () => {
   let pageEnd =
     window.innerHeight + window.scrollY > document.body.offsetHeight;
   if (pageEnd && totalBalance > alreadyRendered) {
     loadMoreBut.classList.add('visible');
-    console.log('added visible');
   } else if (pageEnd) {
-    Notify.info("We're sorry, but you've reached the end of search results.");
+    call && notifyInfo.call();
+    call = false;
   }
 };
 
