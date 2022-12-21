@@ -85,13 +85,12 @@ input.addEventListener('focus', () => {
 
 const endPageHandle = () => {
   let pageEnd =
-    window.innerHeight + window.scrollY >= document.body.offsetHeight;
+    window.innerHeight + window.scrollY > document.body.offsetHeight;
   if (pageEnd && totalBalance > alreadyRendered) {
     loadMoreBut.classList.add('visible');
     console.log('added visible');
   } else if (pageEnd) {
-    Notify.info("We're sorry.");
-    // Notify.info("We're sorry, but you've reached the end of search results.");
+    Notify.info("We're sorry, but you've reached the end of search results.");
   }
 };
 

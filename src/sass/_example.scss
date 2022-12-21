@@ -17,12 +17,19 @@ html {
 
 body {
   margin: 0px;
+  position: relative;
 }
-.scroll-forbidden {
-  height: 100vh;
-  overflow-y: hidden;
-}
+// .scroll-forbidden {
+//   height: 100vh;
+//   overflow-y: hidden;
+// }
+// .................................................
 
+.scroll-forbidden {
+  position: fixed;
+  width: 100%;
+}
+// ..................................................
 form {
   display: flex;
   justify-content: center;
