@@ -1,6 +1,6 @@
 // ESM
 import { template } from './template';
-import { apiFetch } from './apiFetch';
+import { axiosQuery } from './axiosQuery';
 import { bodyScrollBanOnOpenLightbox } from './bodyScrollBan';
 
 // Libraries
@@ -34,34 +34,39 @@ const renderImages = images => {
   bodyScrollBanOnOpenLightbox(lightbox);
 };
 
+const queryAndRender = async () => {
+  try {
+    const imgFromApi = await axiosQuery(searchTerm);
+    const { hits, totalHits } = imgFromApi;
+    if (!hits.length) {
+      Notify.failure(
+        'Sorry, there are no images matching your search query. Please try again.'
+      );
+      form.reset();
+    } else {
+      Notify.info(`Hooray! We found ${totalHits} images.`);
+      renderImages(hits);
+      totalBalance = totalHits;
+    }
+  } catch (error) {
+    console.log(error.message);
+  }
+};
+
 const handleFormSubmit = e => {
   e.preventDefault();
-
   gallery.innerHTML = '';
-
   searchTerm = input.value.trim();
-
-  apiFetch(searchTerm)
-    .then(({ hits, totalHits }) => {
-      if (!hits.length) {
-        Notify.failure(
-          'Sorry, there are no images matching your search query. Please try again.'
-        );
-      } else {
-        Notify.info(`Hooray! We found ${totalHits} images.`);
-        renderImages(hits);
-        totalBalance = totalHits;
-      }
-    })
-    .catch(error => {
-      console.log(error.message);
-    });
+  if (searchTerm) {
+    queryAndRender();
+  }
 };
+
 form.addEventListener('submit', handleFormSubmit);
 
 const loadMoreHandle = () => {
   loadMoreBut.classList.remove('visible');
-  apiFetch(searchTerm, (page += 1)).then(({ hits }) => {
+  axiosQuery(searchTerm, (page += 1)).then(({ hits }) => {
     if (!hits.length) {
       Notify.info("We're sorry, but you've reached the end of search results.");
     } else {
@@ -74,11 +79,11 @@ loadMoreBut.addEventListener('click', loadMoreHandle);
 
 input.addEventListener('focus', () => {
   if (gallery.innerHTML !== '') {
-    alreadyRendered = 0;
-    form.reset();
+    // alreadyRendered = 0;
+    // form.reset();
     page = 1;
     loadMoreBut.classList.remove('visible');
-    gallery.innerHTML = '';
+    // gallery.innerHTML = '';
     call = true;
   }
 });
