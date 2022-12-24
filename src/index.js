@@ -59,6 +59,8 @@ const handleFormSubmit = e => {
   searchTerm = input.value.trim();
   if (searchTerm) {
     queryAndRender();
+  } else {
+    Notify.warning(`Your request may mot be empty!`);
   }
 };
 
@@ -79,11 +81,9 @@ loadMoreBut.addEventListener('click', loadMoreHandle);
 
 input.addEventListener('focus', () => {
   if (gallery.innerHTML !== '') {
-    // alreadyRendered = 0;
-    // form.reset();
+    alreadyRendered = 0;
     page = 1;
     loadMoreBut.classList.remove('visible');
-    // gallery.innerHTML = '';
     call = true;
   }
 });
