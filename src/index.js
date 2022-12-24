@@ -26,6 +26,7 @@ const lightbox = new SimpleLightbox('.link', {
   overlayOpacity: 0.9,
 });
 const renderImages = images => {
+  console.log(images);
   alreadyRendered += images.length;
   let templateForAll = images.map(img => template(img, searchTerm)).join('');
 
